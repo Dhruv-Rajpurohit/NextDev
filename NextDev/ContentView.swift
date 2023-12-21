@@ -20,51 +20,54 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-struct Home : View {
+struct Home: View {
     // Variables for timer events
-    @State var start = false
-    @State var to : CGFloat = 0
-    @State var count = 0
-    @State var time = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    // using combines publish method
-    var body: some View{
-        ZStack{
-            VStack{
-                ZStack{
-                    // Outer Circle 
+    @State private var start = false
+    @State private var count = 0
+    @State private var milliseconds = 0
+    @State private var time = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect() // 0.01 seconds interval for milliseconds
+    @State private var to: CGFloat = 0
+
+    var body: some View {
+        ZStack {
+            VStack {
+                ZStack {
+                    // Outer Circle
                     Circle()
                         .trim(from: 0, to: 1)
                         .stroke(lineWidth: 5)
                         .frame(width: 200, height: 200)
-                    // Inner Circle for showing timer bar - every sec
+                    
+                    // Inner Circle for showing timer bar - every millisecond
                     Circle()
                         .trim(from: 0, to: self.to)
                         .stroke(Color.red, style: StrokeStyle(lineWidth: 15))
                         .frame(width: 200, height: 200)
                         .rotationEffect(.init(degrees: 90))
                     
-                    VStack{
+                    VStack {
                         if count == 60 {
-                            Text("Timeup")
-                                .font(.system(size: 45))
+                            Text("Time up")
+                                .font(.system(size: 30))
                         } else {
-                            Text("\(self.count) Sec")
-                                .font(.system(size: 45))
+                            Text(String(format: "%02d:%02d:%02d", count / 3600, (count % 3600) / 60, count % 60))
+                                .font(.system(size: 30))
                         }
                     }
                 }
                 // Buttons for handling timer
-                VStack(spacing: 20){
+                VStack(spacing: 20) {
                     Button(action: {
-                        if self.count == 60{
+                        if self.count == 60 {
                             self.count = 0
-                            withAnimation(.easeIn){
+                            self.milliseconds = 0
+                            withAnimation(.easeIn) {
                                 self.to = 0
                             }
                         }
                         self.start.toggle()
                     }) {
-                        HStack(spacing: 20){
+                        HStack(spacing: 20) {
                             Text(self.start ? "PAUSE" : "TURN-On")
                                 .foregroundColor(.green)
                         }
@@ -73,11 +76,12 @@ struct Home : View {
                     }
                     Button(action: {
                         self.count = 0
-                        withAnimation(.easeIn){
+                        self.milliseconds = 0
+                        withAnimation(.easeIn) {
                             self.to = 0
                         }
                     }) {
-                        HStack(spacing: 15){
+                        HStack(spacing: 15) {
                             Text("RESTART")
                                 .foregroundColor(.red)
                         }
@@ -86,28 +90,31 @@ struct Home : View {
                 }
             }
         }
-        .onAppear(perform: {
-            UNUserNotificationCenter.current().requestAuthorization(options: [.badge,.sound,.alert]) { (_, _) in
-            }
-        })
-        .onReceive(self.time) { (_) in
-         // Receiving timer event - combine functionality
-            if self.start{
-                if self.count != 60{
-                    self.count += 1
-                    withAnimation(.default){
+        .onAppear {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound, .alert]) { (_, _) in }
+        }
+        .onReceive(self.time) { _ in
+            // Receiving timer event - combine functionality
+            if self.start {
+                if self.count != 60 {
+                    self.milliseconds += 10 // Increment milliseconds by 10 (0.01 seconds)
+                    if self.milliseconds == 1000 {
+                        self.milliseconds = 0
+                        self.count += 1
+                    }
+                    withAnimation(.default) {
                         self.to = CGFloat(self.count) / 60
                     }
-                }
-                else{
+                } else {
                     self.start.toggle()
                     self.setupNotification()
                 }
             }
         }
     }
-    // Notifications Setup for banner 
-    func setupNotification(){
+
+    // Notifications Setup for banner
+    func setupNotification() {
         let nObj = UNMutableNotificationContent()
         nObj.body = "Workout Complete"
         nObj.title = "NextDev-Sports"
@@ -116,3 +123,4 @@ struct Home : View {
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
 }
+
