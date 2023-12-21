@@ -21,21 +21,22 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct Home : View {
-    
+    // Variables for timer events
     @State var start = false
     @State var to : CGFloat = 0
     @State var count = 0
     @State var time = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+    // using combines publish method
     var body: some View{
         ZStack{
             VStack{
                 ZStack{
+                    // Outer Circle 
                     Circle()
                         .trim(from: 0, to: 1)
                         .stroke(lineWidth: 5)
                         .frame(width: 200, height: 200)
-                    
+                    // Inner Circle for showing timer bar - every sec
                     Circle()
                         .trim(from: 0, to: self.to)
                         .stroke(Color.red, style: StrokeStyle(lineWidth: 15))
@@ -52,7 +53,7 @@ struct Home : View {
                         }
                     }
                 }
-                
+                // Buttons for handling timer
                 VStack(spacing: 20){
                     Button(action: {
                         if self.count == 60{
@@ -90,6 +91,7 @@ struct Home : View {
             }
         })
         .onReceive(self.time) { (_) in
+         // Receiving timer event - combine functionality
             if self.start{
                 if self.count != 60{
                     self.count += 1
@@ -104,7 +106,7 @@ struct Home : View {
             }
         }
     }
-    
+    // Notifications Setup for banner 
     func setupNotification(){
         let nObj = UNMutableNotificationContent()
         nObj.body = "Workout Complete"
