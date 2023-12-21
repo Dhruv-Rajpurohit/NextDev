@@ -15,9 +15,7 @@ A simple SwiftUI timer application developed with Combine to manage state and lo
 
 ## Preview
 
-[
-![Simulator Screenshot - iPhone 14 - 2023-12-21 at 16 46 47](https://github.com/Dhruv-Rajpurohit/NextDev/assets/24477482/63a24c80-0069-472c-98bb-6acae12962c4)](https://github.com/Dhruv-Rajpurohit/NextDev/assets/24477482/eab1bf00-4144-4d7d-a50d-f7a172616dd0
-)
+https://github.com/Dhruv-Rajpurohit/NextDev/assets/24477482/7ac8aedf-f642-4b70-91dc-ded47530ae87
 
 
 ## Getting Started
