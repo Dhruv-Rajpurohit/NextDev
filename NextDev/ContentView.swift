@@ -25,7 +25,8 @@ struct Home: View {
     @State private var start = false
     @State private var count = 0
     @State private var milliseconds = 0
-    @State private var time = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect() // 0.01 seconds interval for milliseconds
+    @State private var time = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect() // 0.001 seconds interval for milliseconds
+
     @State private var to: CGFloat = 0
 
     var body: some View {
@@ -50,7 +51,7 @@ struct Home: View {
                             Text("Time up")
                                 .font(.system(size: 30))
                         } else {
-                            Text(String(format: "%02d:%02d:%02d", count / 3600, (count % 3600) / 60, count % 60))
+                            Text(String(format: "%02d:%02d:%02d", count / 60, count % 60, milliseconds / 10))
                                 .font(.system(size: 30))
                         }
                     }
@@ -101,7 +102,9 @@ struct Home: View {
                     if self.milliseconds == 1000 {
                         self.milliseconds = 0
                         self.count += 1
+                        print("hello")
                     }
+                    
                     withAnimation(.default) {
                         self.to = CGFloat(self.count) / 60
                     }
@@ -123,4 +126,5 @@ struct Home: View {
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
 }
+
 
